@@ -1,4 +1,8 @@
-﻿namespace AdminNotificator.Core.Domain;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace AdminNotificator.Core.Domain;
 
 public class UserProfile
 {
