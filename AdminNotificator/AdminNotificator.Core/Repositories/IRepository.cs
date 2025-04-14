@@ -17,38 +17,38 @@ public interface IRepository<TEntity> where TEntity : class
     /// <summary>
     ///     Добавление сущности в хранилище
     /// </summary>
-    /// <param name="item">Сущность</param>
+    /// <param name="itemId">Идентификатор сущности</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Сущность после добавления</returns>
-    Task AddAsync(TEntity item, CancellationToken cancellationToken = default);
+    Task AddAsync(string itemId, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Добавление указанных сущностей
     /// </summary>
-    /// <param name="entities">Сущности</param>
+    /// <param name="itemIds">Идентификаторы сущностей</param>
     /// <param name="cancellationToken">Токен отмены</param>
-    Task AddAllAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
+    Task AddAllAsync(IEnumerable<string> itemIds, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Обновление сущности
     /// </summary>
-    /// <param name="item">Сущность</param>
+    /// <param name="itemId">Идентификатор сущности</param>
     /// <param name="cancellationToken">Токен отмены</param>
-    Task UpdateAsync(TEntity item, CancellationToken cancellationToken = default);
+    Task UpdateAsync(string itemId, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Удаление сущности
     /// </summary>
-    /// <param name="item">Сущность</param>
+    /// <param name="itemId">Идентификатор сущности</param>
     /// <param name="cancellationToken">Токен отмены</param>
-    Task DeleteAsync(TEntity item, CancellationToken cancellationToken = default);
+    Task DeleteAsync(string itemId, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Удаление указанных сущностей
     /// </summary>
-    /// <param name="items">Сущности</param>
+    /// <param name="itemIds">Идентификаторы сущностей</param>
     /// <param name="cancellationToken">Токен отмены</param>
-    Task DeleteAllAsync(IEnumerable<TEntity> items, CancellationToken cancellationToken = default);
+    Task DeleteAllAsync(IEnumerable<string> itemIds, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Удаление сущностей по условию
