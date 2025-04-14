@@ -18,7 +18,7 @@ public class EmailController(
 {
     [HttpGet]
     [Produces("application/json")]
-    public IActionResult GetAll()
+    public ActionResult<IEnumerable<EmailType>> GetAll()
     {
         var allEmails = emailRepository.GetAll().AsNoTracking().ToArray();
         return Ok(allEmails);
@@ -26,7 +26,7 @@ public class EmailController(
     
     [HttpGet("{id}", Name = nameof(GetById))]
     [Produces("application/json")]
-    public async Task<IActionResult> GetById(string id)
+    public async Task<ActionResult<EmailType>> GetById(string id)
     {
         if (!Guid.TryParse(id, out _))
             ModelState.AddModelError("id", "id must be a valid GUID");
@@ -57,7 +57,7 @@ public class EmailController(
 
     [HttpPost]
     [Produces("application/json")]
-    public async Task<IActionResult> Post(EmailTypeDTO emailDTO)
+    public async Task<ActionResult<EmailType>> Post(EmailTypeDTO emailDTO)
     {
         EmailType email;
         try
@@ -113,7 +113,7 @@ public class EmailController(
     }
     
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAsync(string id)
+    public async Task<ActionResult> DeleteAsync(string id)
     {
         try
         {
@@ -127,8 +127,8 @@ public class EmailController(
         }
     }
     
-    [HttpPost("deleteMany")]
-    public async Task<IActionResult> DeleteByIdsAsync([FromBody] IList<string> ids)
+    [HttpPost("delete")]
+    public async Task<ActionResult> DeleteByIdsAsync([FromBody] IList<string> ids)
     {
         try
         {
