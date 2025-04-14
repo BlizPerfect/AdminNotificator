@@ -49,17 +49,32 @@ public class RepositoryTests
     [Test]
     public async Task AddAsync_ShouldAddItem()
     {
-        await _repository.AddAsync("1");
+        var emailType = new EmailType 
+        { 
+            Id = "1", 
+            EmailTitle = "Test Title", 
+            BodyName = "Test Body", 
+            SenderEmail = "test@example.com" 
+        };
+
+        await _repository.AddAsync(emailType);
         await _context.SaveChangesAsync();
 
         var added = _context.EmailTypes.FirstOrDefault(x => x.Id == "1");
         added.Should().NotBeNull();
+        added.EmailTitle.Should().Be("Test Title");
     }
 
     [Test]
     public async Task AddAllAsync_ShouldAddMultipleItems()
     {
-        await _repository.AddAllAsync(new[] { "1", "2" });
+        var items = new List<EmailType>
+        {
+            new() { Id = "1", EmailTitle = "One", BodyName = "Body1", SenderEmail = "1@example.com" },
+            new() { Id = "2", EmailTitle = "Two", BodyName = "Body2", SenderEmail = "2@example.com" }
+        };
+
+        await _repository.AddAllAsync(items);
         await _context.SaveChangesAsync();
 
         _context.EmailTypes.Count().Should().Be(2);
@@ -73,7 +88,7 @@ public class RepositoryTests
         await _context.SaveChangesAsync();
 
         emailType.EmailTitle = "Updated";
-        await _repository.UpdateAsync("1");
+        await _repository.UpdateAsync(emailType);
         await _context.SaveChangesAsync();
 
         var updated = _context.EmailTypes.First(x => x.Id == "1");

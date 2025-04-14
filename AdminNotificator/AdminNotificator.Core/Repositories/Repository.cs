@@ -1,51 +1,23 @@
 using System.Linq.Expressions;
-using AdminNotificator.Core.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdminNotificator.Core.Repositories;
 
-public class Repository<TEntity>(AdminNotificatorDbContext context) 
+public class Repository<TEntity>(AdminNotificatorDbContext context)
     : IRepository<TEntity> where TEntity : class
 {
     public IQueryable<TEntity> GetAll() => context.Set<TEntity>().AsQueryable();
 
-    public async Task AddAsync(string itemId, CancellationToken cancellationToken = default)
-    {
-        var entity = Activator.CreateInstance<TEntity>();
-        if (entity is EmailType emailType)
-        {
-            emailType.Id = itemId;
-            emailType.EmailTitle = "Default Title";
-            emailType.BodyName = "Default Body";
-            emailType.SenderEmail = "default@example.com";
-        }
-        await context.Set<TEntity>().AddAsync(entity, cancellationToken);
-    }
+    public async Task AddAsync(TEntity item, CancellationToken cancellationToken = default) 
+        => await context.Set<TEntity>().AddAsync(item, cancellationToken);
 
-    public async Task AddAllAsync(IEnumerable<string> itemIds, CancellationToken cancellationToken = default)
-    {
-        var entities = itemIds.Select(id =>
-        {
-            var entity = Activator.CreateInstance<TEntity>();
-            if (entity is EmailType emailType)
-            {
-                emailType.Id = id;
-                emailType.EmailTitle = "Default Title";
-                emailType.BodyName = "Default Body";
-                emailType.SenderEmail = "default@example.com";
-            }
-            return entity;
-        });
-        await context.Set<TEntity>().AddRangeAsync(entities, cancellationToken);
-    }
+    public async Task AddAllAsync(IEnumerable<TEntity> items, CancellationToken cancellationToken = default) 
+        => await context.Set<TEntity>().AddRangeAsync(items, cancellationToken);
 
-    public async Task UpdateAsync(string itemId, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(TEntity item, CancellationToken cancellationToken = default)
     {
-        var entity = await context.Set<TEntity>().FindAsync(itemId);
-        if (entity != null)
-        {
-            context.Entry(entity).State = EntityState.Modified;
-        }
+        context.Entry(item).State = EntityState.Modified;
+        await Task.CompletedTask;
     }
 
     public async Task DeleteAsync(string itemId, CancellationToken cancellationToken = default)
