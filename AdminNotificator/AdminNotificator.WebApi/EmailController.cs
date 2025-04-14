@@ -115,20 +115,37 @@ public class EmailController(
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAsync(string id)
     {
-        await emailRepository.DeleteAsync(id);
-        return NoContent();
+        try
+        {
+            await emailRepository.DeleteAsync(id);
+            return NoContent();
+        }
+        catch (Exception e)
+        {
+            logger.LogError($"Delete id failed: {e}");
+            return Conflict();
+        }
     }
     
-    [HttpPost("delete")]
+    [HttpPost("deleteMany")]
     public async Task<IActionResult> DeleteByIdsAsync([FromBody] IList<string> ids)
     {
-        if (ids is null)
+        try
         {
-            return UnprocessableEntity("No IDs provided");
+            if (ids is null)
+            {
+                return UnprocessableEntity("No IDs provided");
+            }
+
+            await emailRepository.DeleteAllAsync(ids);
+
+            return NoContent();
+
         }
-        
-        await emailRepository.DeleteAllAsync(ids);
-        
-        return NoContent();
+        catch (Exception e)
+        {
+            logger.LogError($"Post notifications/deleteMany failed: {e}");
+            return Conflict();
+        }
     }
 }
