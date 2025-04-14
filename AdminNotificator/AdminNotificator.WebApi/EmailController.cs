@@ -58,4 +58,11 @@ public class EmailController(
 
         return CreatedAtRoute(nameof(GetById), new { id = email.Id }, email);
     }
+    
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAsync(string id)
+    {
+        await emailRepository.DeleteAsync(id);
+        return NoContent();
+    }
 }
