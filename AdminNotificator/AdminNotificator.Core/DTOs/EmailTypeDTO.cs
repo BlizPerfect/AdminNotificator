@@ -1,82 +1,36 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
 namespace AdminNotificator.Core.DTOs;
 
-public class EmailTypeDTO
-{
-    /// <summary>
-    /// Количество дней в компании
-    /// </summary>
-    public int? ExperianceDays { get; set; }
-
-    /// <summary>
-    /// Заголовок письма
-    /// </summary>
-    public required string EmailTitle { get; set; }
-
-    /// <summary>
-    /// Отправлять письма только сотрудникам указанных отделов
-    /// </summary>
-    public int[]? IntersectDepartmentIds { get; set; }
-
-    /// <summary>
-    /// Отправлять письма всем сотркдникам кроме указанных списка отделов
-    /// </summary>
-    public int[]? ExceptDepartmentIds { get; set; }
-
-    /// <summary>
-    /// Отправлять письма только сотрудникам указанных организаций
-    /// </summary>
-    public string[]? IntersectOrganizationNames { get; set; }
-
-    /// <summary>
-    /// Название типа письма
-    /// </summary>
-    public required string BodyName { get; set; }
-
-    /// <summary>
-    /// Отправлять письма только сотрудникам указанных городов
-    /// </summary>
-    public string[]? IntersectTowns { get; set; }
-
-    /// <summary>
-    /// Не отправлять письма сотрудникам указанных городов
-    /// </summary>
-    public string[]? ExceptTowns { get; set; }
-
-
-    /// <summary>
-    /// Не отправляють после указаной даты
-    /// </summary>
-    public DateTime? DontSendAfterDate { get; set; }
-
-    /// <summary>
-    /// Кол-во дней декретного отпуска, через которое нужно отправить письмо
-    /// </summary>
-    public int? MaternityDays { get; set; }
-
-    /// <summary>
-    /// для какого пола письмо
-    /// </summary>
-    public string[]? ForGenders { get; set; }
-
-    /// <summary>
-    /// Через сколько дней возможна повторная рассылка писем c этим типом
-    /// </summary>
-    public int? DayCountsForResend { get; set; }
-
-    /// <summary>
-    /// Отправлять письма только сотрудникам указанных должностей
-    /// </summary>
-    public HashSet<string>? IntersectUserPosts { get; set; }
-
-    /// <summary>
-    /// Отправлять письма всем сотрудникам кроме указанных должностей
-    /// </summary>
-    public HashSet<string>? ExceptUserPosts { get; set; }
-
-    public required string SenderEmail { get; set; }
-
-    /// <summary>
-    /// Эмайлы тех, кому надо отправить скрытую копию
-    /// </summary>
-    public string[] Bcc { get; set; } = Array.Empty<string>();
-}
+public record EmailTypeDTO(
+    [Range(0, int.MaxValue, ErrorMessage = "Количество дней в компании должно быть ≥ 0")]
+    int? ExperianceDays,
+    [Required]
+    [MaxLength(50, ErrorMessage = "Заголовок письма должен иметь длину не более 50 символов")]
+    string EmailTitle,
+    int[]? IntersectDepartmentIds,
+    int[]? ExceptDepartmentIds,
+    string[]? IntersectOrganizationNames,
+    [Required]
+    [MaxLength(50, ErrorMessage = "Название типа письма должено иметь длину не более 50 символов")]
+    string BodyName,
+    string[]? IntersectTowns,
+    string[]? ExceptTowns,
+    DateTime? DontSendAfterDate,
+    [Range(0, 140,
+        ErrorMessage =
+            "Соглсано ст. 255 ТК РФ отпуск по беременности и родам не должен превышать 140 календарных дней")]
+    int? MaternityDays,
+    [MaxLength(2, ErrorMessage = "Существует только 2 пола")]
+    string[]? ForGenders,
+    [Range(0, int.MaxValue,
+        ErrorMessage = "Повторная рассылка уведомлений возможна только через положительное число дней")]
+    int? DayCountsForResend,
+    HashSet<string>? IntersectUserPosts,
+    HashSet<string>? ExceptUserPosts,
+    [Required]
+    [MaxLength(50, ErrorMessage = "email отправителя должен иметь длину не более 50 символов")]
+    string SenderEmail,
+    string[]? Bcc);
