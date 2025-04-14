@@ -80,5 +80,8 @@ public class EmailType
 
     public required string SenderEmail { get; set; }
 
+    /// <summary>
+    /// Эмайлы тех, кому надо отправить скрытую копию
+    /// </summary>
     public string[] Bcc { get; set; } = Array.Empty<string>();
 }
