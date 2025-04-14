@@ -1,0 +1,8 @@
+generatorName: typescript-angular
+outputDir: ./src/app/api-module
+inputSpec: ./swagger/swagger.json
+typeMappings:
+  DateTime: "Date"
+additionalProperties:
+  withInterfaces: "true"
+  ngVersion: 16.0.0
