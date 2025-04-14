@@ -2,10 +2,6 @@
 
 namespace AdminNotificator.Core.Repositories;
 
-/// <summary>
-///     Репозиторий сущности
-/// </summary>
-/// <typeparam name="TEntity">Тип сущности</typeparam>
 public interface IRepository<TEntity> where TEntity : class
 {
     /// <summary>
@@ -17,24 +13,24 @@ public interface IRepository<TEntity> where TEntity : class
     /// <summary>
     ///     Добавление сущности в хранилище
     /// </summary>
-    /// <param name="itemId">Идентификатор сущности</param>
+    /// <param name="item">Сущность</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Сущность после добавления</returns>
-    Task AddAsync(string itemId, CancellationToken cancellationToken = default);
+    Task AddAsync(TEntity item, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Добавление указанных сущностей
     /// </summary>
-    /// <param name="itemIds">Идентификаторы сущностей</param>
+    /// <param name="items">Сущности</param>
     /// <param name="cancellationToken">Токен отмены</param>
-    Task AddAllAsync(IEnumerable<string> itemIds, CancellationToken cancellationToken = default);
+    Task AddAllAsync(IEnumerable<TEntity> items, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Обновление сущности
     /// </summary>
-    /// <param name="itemId">Идентификатор сущности</param>
+    /// <param name="item">Сущность</param>
     /// <param name="cancellationToken">Токен отмены</param>
-    Task UpdateAsync(string itemId, CancellationToken cancellationToken = default);
+    Task UpdateAsync(TEntity item, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Удаление сущности

@@ -1,51 +1,29 @@
 using System.Linq.Expressions;
-using AdminNotificator.Core.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdminNotificator.Core.Repositories;
 
-public class Repository<TEntity>(AdminNotificatorDbContext context) 
+public class Repository<TEntity>(AdminNotificatorDbContext context)
     : IRepository<TEntity> where TEntity : class
 {
     public IQueryable<TEntity> GetAll() => context.Set<TEntity>().AsQueryable();
 
-    public async Task AddAsync(string itemId, CancellationToken cancellationToken = default)
+    public async Task AddAsync(TEntity item, CancellationToken cancellationToken = default)
     {
-        var entity = Activator.CreateInstance<TEntity>();
-        if (entity is EmailType emailType)
-        {
-            emailType.Id = itemId;
-            emailType.EmailTitle = "Default Title";
-            emailType.BodyName = "Default Body";
-            emailType.SenderEmail = "default@example.com";
-        }
-        await context.Set<TEntity>().AddAsync(entity, cancellationToken);
+        await context.Set<TEntity>().AddAsync(item, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task AddAllAsync(IEnumerable<string> itemIds, CancellationToken cancellationToken = default)
+    public async Task AddAllAsync(IEnumerable<TEntity> items, CancellationToken cancellationToken = default)
     {
-        var entities = itemIds.Select(id =>
-        {
-            var entity = Activator.CreateInstance<TEntity>();
-            if (entity is EmailType emailType)
-            {
-                emailType.Id = id;
-                emailType.EmailTitle = "Default Title";
-                emailType.BodyName = "Default Body";
-                emailType.SenderEmail = "default@example.com";
-            }
-            return entity;
-        });
-        await context.Set<TEntity>().AddRangeAsync(entities, cancellationToken);
+        await context.Set<TEntity>().AddRangeAsync(items, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(string itemId, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(TEntity item, CancellationToken cancellationToken = default)
     {
-        var entity = await context.Set<TEntity>().FindAsync(itemId);
-        if (entity != null)
-        {
-            context.Entry(entity).State = EntityState.Modified;
-        }
+        context.Entry(item).State = EntityState.Modified;
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteAsync(string itemId, CancellationToken cancellationToken = default)
@@ -54,6 +32,7 @@ public class Repository<TEntity>(AdminNotificatorDbContext context)
         if (entity != null)
         {
             context.Set<TEntity>().Remove(entity);
+            await context.SaveChangesAsync(cancellationToken);
         }
     }
 
@@ -69,11 +48,13 @@ public class Repository<TEntity>(AdminNotificatorDbContext context)
             }
         }
         context.Set<TEntity>().RemoveRange(entities);
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteAllAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
     {
         var entities = await context.Set<TEntity>().Where(predicate).ToListAsync(cancellationToken);
         context.Set<TEntity>().RemoveRange(entities);
+        await context.SaveChangesAsync(cancellationToken);
     }
 }
