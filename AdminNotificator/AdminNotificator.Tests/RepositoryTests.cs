@@ -32,21 +32,6 @@ public class RepositoryTests
     }
 
     [Test]
-    public void GetAll_ShouldReturnQueryable()
-    {
-        _context.EmailTypes.AddRange(
-            new EmailType { Id = "1", EmailTitle = "Test 1", BodyName = "Body1", SenderEmail = "test1@example.com" },
-            new EmailType { Id = "2", EmailTitle = "Test 2", BodyName = "Body2", SenderEmail = "test2@example.com" }
-        );
-        _context.SaveChanges();
-
-        var result = _repository.GetAll().ToList();
-
-        result.Count.Should().Be(2);
-        result.First().Id.Should().Be("1");
-    }
-
-    [Test]
     public async Task AddAsync_ShouldAddItem()
     {
         var emailType = new EmailType 
@@ -58,7 +43,6 @@ public class RepositoryTests
         };
 
         await _repository.AddAsync(emailType);
-        await _context.SaveChangesAsync();
 
         var added = _context.EmailTypes.FirstOrDefault(x => x.Id == "1");
         added.Should().NotBeNull();
@@ -75,7 +59,6 @@ public class RepositoryTests
         };
 
         await _repository.AddAllAsync(items);
-        await _context.SaveChangesAsync();
 
         _context.EmailTypes.Count().Should().Be(2);
     }
@@ -84,12 +67,10 @@ public class RepositoryTests
     public async Task UpdateAsync_ShouldUpdateEntity()
     {
         var emailType = new EmailType { Id = "1", EmailTitle = "Old", BodyName = "Body", SenderEmail = "email@example.com" };
-        _context.EmailTypes.Add(emailType);
-        await _context.SaveChangesAsync();
+        await _repository.AddAsync(emailType);
 
         emailType.EmailTitle = "Updated";
         await _repository.UpdateAsync(emailType);
-        await _context.SaveChangesAsync();
 
         var updated = _context.EmailTypes.First(x => x.Id == "1");
         updated.EmailTitle.Should().Be("Updated");
@@ -100,10 +81,8 @@ public class RepositoryTests
     {
         var emailType = new EmailType { Id = "1", EmailTitle = "Delete Me", BodyName = "Body", SenderEmail = "email@example.com" };
         _context.EmailTypes.Add(emailType);
-        await _context.SaveChangesAsync();
 
         await _repository.DeleteAsync("1");
-        await _context.SaveChangesAsync();
 
         _context.EmailTypes.Any(x => x.Id == "1").Should().BeFalse();
     }
@@ -117,27 +96,39 @@ public class RepositoryTests
             new() { Id = "2", EmailTitle = "Two", BodyName = "Body2", SenderEmail = "2@example.com" }
         };
         _context.EmailTypes.AddRange(items);
-        await _context.SaveChangesAsync();
 
         await _repository.DeleteAllAsync(new[] { "1", "2" });
-        await _context.SaveChangesAsync();
 
         _context.EmailTypes.Count().Should().Be(0);
+    }
+    [Test]
+    public void GetAll_ShouldReturnQueryable()
+    {
+        var emailType1 = new EmailType { Id = "1", EmailTitle = "Test 1", BodyName = "Body1", SenderEmail = "test1@example.com" };
+        var emailType2 = new EmailType { Id = "2", EmailTitle = "Test 2", BodyName = "Body2", SenderEmail = "test2@example.com" };
+
+        _repository.AddAsync(emailType1).Wait();
+        _repository.AddAsync(emailType2).Wait();
+
+        var result = _repository.GetAll().ToList();
+
+        result.Count.Should().Be(2);
+        result.First().Id.Should().Be("1");
     }
 
     [Test]
     public async Task DeleteAllAsync_WithPredicate_ShouldRemoveMatching()
     {
-        _context.EmailTypes.AddRange(
-            new EmailType { Id = "1", EmailTitle = "Delete", BodyName = "Body1", SenderEmail = "a@example.com" },
-            new EmailType { Id = "2", EmailTitle = "Keep", BodyName = "Body2", SenderEmail = "b@example.com" }
-        );
-        await _context.SaveChangesAsync();
+        var emailType1 = new EmailType { Id = "1", EmailTitle = "Delete", BodyName = "Body1", SenderEmail = "a@example.com" };
+        var emailType2 = new EmailType { Id = "2", EmailTitle = "Keep", BodyName = "Body2", SenderEmail = "b@example.com" };
+
+        await _repository.AddAsync(emailType1);
+        await _repository.AddAsync(emailType2);
 
         await _repository.DeleteAllAsync(x => x.EmailTitle == "Delete");
-        await _context.SaveChangesAsync();
 
         _context.EmailTypes.Count().Should().Be(1);
         _context.EmailTypes.First().EmailTitle.Should().Be("Keep");
     }
+
 }

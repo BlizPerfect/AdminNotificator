@@ -8,16 +8,22 @@ public class Repository<TEntity>(AdminNotificatorDbContext context)
 {
     public IQueryable<TEntity> GetAll() => context.Set<TEntity>().AsQueryable();
 
-    public async Task AddAsync(TEntity item, CancellationToken cancellationToken = default) 
-        => await context.Set<TEntity>().AddAsync(item, cancellationToken);
+    public async Task AddAsync(TEntity item, CancellationToken cancellationToken = default)
+    {
+        await context.Set<TEntity>().AddAsync(item, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
+    }
 
-    public async Task AddAllAsync(IEnumerable<TEntity> items, CancellationToken cancellationToken = default) 
-        => await context.Set<TEntity>().AddRangeAsync(items, cancellationToken);
+    public async Task AddAllAsync(IEnumerable<TEntity> items, CancellationToken cancellationToken = default)
+    {
+        await context.Set<TEntity>().AddRangeAsync(items, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
+    }
 
     public async Task UpdateAsync(TEntity item, CancellationToken cancellationToken = default)
     {
         context.Entry(item).State = EntityState.Modified;
-        await Task.CompletedTask;
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteAsync(string itemId, CancellationToken cancellationToken = default)
@@ -26,6 +32,7 @@ public class Repository<TEntity>(AdminNotificatorDbContext context)
         if (entity != null)
         {
             context.Set<TEntity>().Remove(entity);
+            await context.SaveChangesAsync(cancellationToken);
         }
     }
 
@@ -41,11 +48,13 @@ public class Repository<TEntity>(AdminNotificatorDbContext context)
             }
         }
         context.Set<TEntity>().RemoveRange(entities);
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteAllAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
     {
         var entities = await context.Set<TEntity>().Where(predicate).ToListAsync(cancellationToken);
         context.Set<TEntity>().RemoveRange(entities);
+        await context.SaveChangesAsync(cancellationToken);
     }
 }
