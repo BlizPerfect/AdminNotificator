@@ -24,7 +24,7 @@ public class RepositoryTests
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
     }
-        
+
     [TearDown]
     public void TearDown()
     {
@@ -49,32 +49,17 @@ public class RepositoryTests
     [Test]
     public async Task AddAsync_ShouldAddItem()
     {
-        var emailType = new EmailType
-        {
-            Id = "1",
-            EmailTitle = "Test",
-            BodyName = "Body",
-            SenderEmail = "test@example.com"
-        };
-
-        await _repository.AddAsync(emailType);
+        await _repository.AddAsync("1");
         await _context.SaveChangesAsync();
 
         var added = _context.EmailTypes.FirstOrDefault(x => x.Id == "1");
         added.Should().NotBeNull();
-        added.EmailTitle.Should().Be("Test");
     }
 
     [Test]
     public async Task AddAllAsync_ShouldAddMultipleItems()
     {
-        var items = new List<EmailType>
-        {
-            new() { Id = "1", EmailTitle = "One", BodyName = "Body1", SenderEmail = "1@example.com" },
-            new() { Id = "2", EmailTitle = "Two", BodyName = "Body2", SenderEmail = "2@example.com" }
-        };
-
-        await _repository.AddAllAsync(items);
+        await _repository.AddAllAsync(new[] { "1", "2" });
         await _context.SaveChangesAsync();
 
         _context.EmailTypes.Count().Should().Be(2);
@@ -88,7 +73,7 @@ public class RepositoryTests
         await _context.SaveChangesAsync();
 
         emailType.EmailTitle = "Updated";
-        await _repository.UpdateAsync(emailType);
+        await _repository.UpdateAsync("1");
         await _context.SaveChangesAsync();
 
         var updated = _context.EmailTypes.First(x => x.Id == "1");
@@ -102,7 +87,7 @@ public class RepositoryTests
         _context.EmailTypes.Add(emailType);
         await _context.SaveChangesAsync();
 
-        await _repository.DeleteAsync(emailType);
+        await _repository.DeleteAsync("1");
         await _context.SaveChangesAsync();
 
         _context.EmailTypes.Any(x => x.Id == "1").Should().BeFalse();
@@ -119,7 +104,7 @@ public class RepositoryTests
         _context.EmailTypes.AddRange(items);
         await _context.SaveChangesAsync();
 
-        await _repository.DeleteAllAsync(items);
+        await _repository.DeleteAllAsync(new[] { "1", "2" });
         await _context.SaveChangesAsync();
 
         _context.EmailTypes.Count().Should().Be(0);
