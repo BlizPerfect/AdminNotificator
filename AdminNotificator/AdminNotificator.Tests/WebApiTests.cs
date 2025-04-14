@@ -84,8 +84,8 @@ public class WebApiTests
 
             var result = controller.GetAll();
 
-            result.Should().BeOfType<OkObjectResult>();
-            var okResult = result as OkObjectResult;
+            result.Result.Should().BeOfType<OkObjectResult>();
+            var okResult = result.Result as OkObjectResult;
             okResult!.Value.Should().BeEquivalentTo(testData);
         }
     }
@@ -108,8 +108,8 @@ public class WebApiTests
 
             var result = await controller.GetById(testEmail.Id);
 
-            result.Should().BeOfType<OkObjectResult>();
-            var okResult = result as OkObjectResult;
+            result.Result.Should().BeOfType<OkObjectResult>();
+            var okResult = result.Result as OkObjectResult;
             okResult!.Value.Should().BeEquivalentTo(testEmail);
         }
     }
@@ -125,7 +125,7 @@ public class WebApiTests
             var nonExistingId = Guid.NewGuid().ToString();
             var result = await controller.GetById(nonExistingId);
 
-            result.Should().BeOfType<NotFoundResult>();
+            result.Result.Should().BeOfType<NotFoundResult>();
         }
     }
 
@@ -148,8 +148,8 @@ public class WebApiTests
 
             var result = await controller.Post(dto);
 
-            result.Should().BeOfType<CreatedAtRouteResult>();
-            var createdResult = result as CreatedAtRouteResult;
+            result.Result.Should().BeOfType<CreatedAtRouteResult>();
+            var createdResult = result.Result as CreatedAtRouteResult;
             createdResult!.RouteName.Should().Be(nameof(EmailController.GetById));
             createdResult.RouteValues!["id"].Should().Be(generatedId);
             createdResult.Value.Should().BeEquivalentTo(emailType);
@@ -174,7 +174,7 @@ public class WebApiTests
 
         var result = await controller.Post(dto);
 
-        result.Should().BeOfType<ConflictResult>();
+        result.Result.Should().BeOfType<ConflictResult>();
         _mockLogger.Verify(
             x => x.Log(
                 LogLevel.Error,
@@ -199,7 +199,7 @@ public class WebApiTests
 
         var result = await controller.Post(dto);
 
-        result.Should().BeOfType<ConflictResult>();
+        result.Result.Should().BeOfType<ConflictResult>();
         _mockLogger.Verify(
             x => x.Log(
                 LogLevel.Error,
@@ -244,7 +244,7 @@ public class WebApiTests
 
             var result = await controller.GetById("invalid-guid");
 
-            result.Should().BeOfType<UnprocessableEntityObjectResult>();
+            result.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
         }
     }
 }
