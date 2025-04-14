@@ -69,4 +69,17 @@ public class EmailController(
         await emailRepository.DeleteAsync(id);
         return NoContent();
     }
+    
+    [HttpPost("delete")]
+    public async Task<IActionResult> DeleteByIdsAsync([FromBody] List<string> ids)
+    {
+        if (ids is null || ids.Count() == 0)
+        {
+            return BadRequest("No IDs provided");
+        }
+        
+        await emailRepository.DeleteAllAsync(ids);
+        
+        return Ok(ids);
+    }
 }
