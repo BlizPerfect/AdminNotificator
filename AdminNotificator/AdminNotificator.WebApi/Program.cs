@@ -13,7 +13,16 @@ builder.Services.AddAutoMapper(cfg =>
         .ForMember(o => o.IntersectUserPosts,
             opt => opt.Condition(o => o.IntersectUserPosts != null))
         .ForMember(o => o.ExceptUserPosts,
-            opt => opt.Condition(o => o.ExceptUserPosts != null));
+            opt => opt.Condition(o => o.ExceptUserPosts != null))
+        .ForMember(o => o.IntersectTowns,
+            opt => opt.Condition(o => o.IntersectTowns != null))
+        .ForMember(o => o.ExceptTowns,
+            opt => opt.Condition(o => o.ExceptTowns != null))
+        .ForMember(o => o.IntersectDepartmentIds,
+            opt => opt.Condition(o => o.IntersectDepartmentIds != null))
+        .ForMember(o => o.ExceptDepartmentIds,
+            opt => opt.Condition(o => o.ExceptDepartmentIds != null));
+
 });
 
 builder.Services.AddEndpointsApiExplorer();
