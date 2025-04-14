@@ -92,10 +92,6 @@ public class UserProfile
     
     protected UserProfile() { }
 
-    public UserProfile()
-    {
-    }
-
     private UserProfile(string login, string sid, string firstname, string surname, string patronymic,
         string email, DateTime? seniorityDate, int? suspendedSeniorityDays, IEnumerable<UserDepartment> departmentItems,
         IEnumerable<UserPosition> positions, int[] departmentIds, UserStatus userStatus, UserOffice userOffice,
