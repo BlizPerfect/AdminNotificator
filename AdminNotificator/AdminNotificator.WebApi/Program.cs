@@ -1,9 +1,21 @@
 using AdminNotificator.Core;
 using AdminNotificator.Core.Domain;
+using AdminNotificator.Core.DTOs;
 using AdminNotificator.Core.Repositories;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.CreateMap<EmailTypeDTO, EmailType>()
+        .ForMember(o => o.Id,
+            opt => opt.MapFrom(_ => Guid.NewGuid().ToString()))
+        .ForMember(o => o.IntersectUserPosts,
+            opt => opt.Condition(o => o.IntersectUserPosts != null))
+        .ForMember(o => o.ExceptUserPosts,
+            opt => opt.Condition(o => o.ExceptUserPosts != null));
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

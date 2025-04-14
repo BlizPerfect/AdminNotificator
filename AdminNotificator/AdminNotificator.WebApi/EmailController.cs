@@ -1,5 +1,7 @@
 using AdminNotificator.Core.Domain;
+using AdminNotificator.Core.DTOs;
 using AdminNotificator.Core.Repositories;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,7 +9,11 @@ namespace AdminNotificator.WebApi;
 
 [Controller]
 [Route("notifications")]
-public class EmailController(IRepository<EmailType> emailRepository) : ControllerBase
+public class EmailController(
+    IRepository<EmailType> emailRepository,
+    IMapper mapper,
+    ILogger<EmailController> logger
+) : ControllerBase
 {
     [HttpGet]
     [Produces("application/json")]
@@ -36,15 +42,17 @@ public class EmailController(IRepository<EmailType> emailRepository) : Controlle
 
     [HttpPost]
     [Produces("application/json")]
-    public async Task<IActionResult> Post(EmailType email)
+    public async Task<IActionResult> Post(EmailTypeDTO emailDTO)
     {
-        email.Id = Guid.NewGuid().ToString();
+        EmailType email;
         try
         {
+            email = mapper.Map<EmailType>(emailDTO);
             await emailRepository.AddAsync(email);
         }
         catch (Exception ex)
         {
+            logger.LogError($"Post notifications/ failed: {ex}");
             return Conflict();
         }
 
