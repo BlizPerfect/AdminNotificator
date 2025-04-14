@@ -2,6 +2,7 @@ using AdminNotificator.Core;
 using AdminNotificator.Core.Domain;
 using AdminNotificator.Core.Repositories;
 using Microsoft.EntityFrameworkCore;
+using FluentAssertions;
 
 namespace AdminNotificator.Tests;
 
@@ -41,8 +42,8 @@ public class RepositoryTests
 
         var result = _repository.GetAll().ToList();
 
-        Assert.That(result.Count, Is.EqualTo(2));
-        Assert.That(result.First().Id, Is.EqualTo("1"));
+        result.Count.Should().Be(2);
+        result.First().Id.Should().Be("1");
     }
 
     [Test]
@@ -60,8 +61,8 @@ public class RepositoryTests
         await _context.SaveChangesAsync();
 
         var added = _context.EmailTypes.FirstOrDefault(x => x.Id == "1");
-        Assert.That(added, Is.Not.Null);
-        Assert.That(added.EmailTitle, Is.EqualTo("Test"));
+        added.Should().NotBeNull();
+        added.EmailTitle.Should().Be("Test");
     }
 
     [Test]
@@ -76,7 +77,7 @@ public class RepositoryTests
         await _repository.AddAllAsync(items);
         await _context.SaveChangesAsync();
 
-        Assert.That(_context.EmailTypes.Count(), Is.EqualTo(2));
+        _context.EmailTypes.Count().Should().Be(2);
     }
 
     [Test]
@@ -91,7 +92,7 @@ public class RepositoryTests
         await _context.SaveChangesAsync();
 
         var updated = _context.EmailTypes.First(x => x.Id == "1");
-        Assert.That(updated.EmailTitle, Is.EqualTo("Updated"));
+        updated.EmailTitle.Should().Be("Updated");
     }
 
     [Test]
@@ -104,7 +105,7 @@ public class RepositoryTests
         await _repository.DeleteAsync(emailType);
         await _context.SaveChangesAsync();
 
-        Assert.That(_context.EmailTypes.Any(x => x.Id == "1"), Is.False);
+        _context.EmailTypes.Any(x => x.Id == "1").Should().BeFalse();
     }
 
     [Test]
@@ -121,7 +122,7 @@ public class RepositoryTests
         await _repository.DeleteAllAsync(items);
         await _context.SaveChangesAsync();
 
-        Assert.That(_context.EmailTypes.Count(), Is.EqualTo(0));
+        _context.EmailTypes.Count().Should().Be(0);
     }
 
     [Test]
@@ -136,7 +137,7 @@ public class RepositoryTests
         await _repository.DeleteAllAsync(x => x.EmailTitle == "Delete");
         await _context.SaveChangesAsync();
 
-        Assert.That(_context.EmailTypes.Count(), Is.EqualTo(1));
-        Assert.That(_context.EmailTypes.First().EmailTitle, Is.EqualTo("Keep"));
+        _context.EmailTypes.Count().Should().Be(1);
+        _context.EmailTypes.First().EmailTitle.Should().Be("Keep");
     }
 }
