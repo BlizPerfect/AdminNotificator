@@ -89,6 +89,8 @@ public class UserProfile
     /// Дата декрета
     /// </summary>
     public DateTime? MaternityLeaveDate { get; set; }
+    
+    protected UserProfile() { }
 
     public UserProfile()
     {
@@ -130,4 +132,5 @@ public class UserProfile
         return new UserProfile(login, sid, firstname, surname, patronymic, email, seniorityDate, suspendedSeniorityDays,
             departmentItems, positions, departmentIds, userStatus, userOffice, userGender, maternityLeaveDate);
     }
+    
 }
