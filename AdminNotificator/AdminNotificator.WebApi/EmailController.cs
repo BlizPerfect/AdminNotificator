@@ -4,6 +4,7 @@ using AdminNotificator.Core.Repositories;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace AdminNotificator.WebApi;
 
@@ -47,7 +48,9 @@ public class EmailController(
         }
 
         if (email == null)
+        {
             return NotFound();
+        }
 
         return Ok(email);
     }
@@ -107,5 +110,25 @@ public class EmailController(
         if (email.DayCountsForResend != null && email.DayCountsForResend < 0)
             ModelState.AddModelError(nameof(email.DayCountsForResend),
                 "DayCountsForResend must be >= 0");
+    }
+    
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAsync(string id)
+    {
+        await emailRepository.DeleteAsync(id);
+        return NoContent();
+    }
+    
+    [HttpPost("delete")]
+    public async Task<IActionResult> DeleteByIdsAsync([FromBody] IList<string> ids)
+    {
+        if (ids is null)
+        {
+            return UnprocessableEntity("No IDs provided");
+        }
+        
+        await emailRepository.DeleteAllAsync(ids);
+        
+        return NoContent();
     }
 }
