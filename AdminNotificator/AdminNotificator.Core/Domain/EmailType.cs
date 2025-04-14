@@ -74,12 +74,12 @@ public class EmailType
     /// <summary>
     /// Отправлять письма только сотрудникам указанных должностей
     /// </summary>
-    public HashSet<string>? IntersectUserPosts { get; set; }
+    public List<string>? IntersectUserPosts { get; set; }
 
     /// <summary>
     /// Отправлять письма всем сотрудникам кроме указанных должностей
     /// </summary>
-    public HashSet<string>? ExceptUserPosts { get; set; }
+    public List<string>? ExceptUserPosts { get; set; }
 
     public required string SenderEmail { get; set; }
 
