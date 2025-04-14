@@ -75,7 +75,7 @@ public class EmailController(
         return CreatedAtRoute(nameof(GetById), new { id = email.Id }, email);
     }
 
-    [HttpPut("/{id}")]
+    [HttpPut("{id}")]
     [Produces("application/json")]
     public async Task<ActionResult<EmailType>> Put(string id, EmailTypeDTO emailDto)
     {
