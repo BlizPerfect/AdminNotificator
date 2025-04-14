@@ -4,7 +4,6 @@ using AdminNotificator.Core.Repositories;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace AdminNotificator.WebApi;
 
@@ -28,8 +27,7 @@ public class EmailController(
     [Produces("application/json")]
     public async Task<ActionResult<EmailType>> GetById(string id)
     {
-        if (!Guid.TryParse(id, out _))
-            ModelState.AddModelError("id", "id must be a valid GUID");
+        ValidateId(id);
         if (!ModelState.IsValid)
             return UnprocessableEntity(ModelState);
 
@@ -77,6 +75,44 @@ public class EmailController(
         return CreatedAtRoute(nameof(GetById), new { id = email.Id }, email);
     }
 
+    [HttpPut("/{id}")]
+    [Produces("application/json")]
+    public async Task<ActionResult<EmailType>> Put(string id, EmailTypeDTO emailDto)
+    {
+        EmailType email;
+        try
+        {
+            ValidateId(id);
+
+            email = mapper.Map<EmailType>(emailDto);
+            email.Id = id;
+            
+            ValidateEmailType(email);
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
+            var existing = await emailRepository.GetAll()
+                .AsNoTracking()
+                .Where(o => o.Id == id)
+                .FirstOrDefaultAsync();
+            
+            if (existing == null)
+            {
+                await emailRepository.AddAsync(email);
+                return CreatedAtRoute(nameof(GetById), new { id = email.Id }, email);
+            }
+
+            await emailRepository.UpdateAsync(email);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"Put notifications/{id} failed: {ex}");
+            return Conflict();
+        }
+
+        return Ok(email);
+    }
+
     private void ValidateEmailType(EmailType email)
     {
         if (email.ExperianceDays != null && email.ExperianceDays < 0)
@@ -87,7 +123,7 @@ public class EmailController(
         if (email.IntersectTowns != null && email.ExceptTowns != null)
             ModelState.AddModelError("Towns",
                 "can not use except and intersect at the same time");
-        if (email.MaternityDays != null && email.MaternityDays >= 0)
+        if (email.MaternityDays != null && email.MaternityDays < 0)
             ModelState.AddModelError(nameof(email.MaternityDays),
                 "maternity days must be >= 0");
         if (email.ForGenders != null)
@@ -127,7 +163,7 @@ public class EmailController(
         }
     }
     
-    [HttpPost("delete")]
+    [HttpPost("deleteMany")]
     public async Task<ActionResult> DeleteByIdsAsync([FromBody] IList<string> ids)
     {
         try
@@ -147,5 +183,11 @@ public class EmailController(
             logger.LogError($"Post notifications/deleteMany failed: {e}");
             return Conflict();
         }
+    }
+
+    private void ValidateId(string id)
+    {
+        if (!Guid.TryParse(id, out _))
+            ModelState.AddModelError("id", "id must be a valid GUID");
     }
 }
