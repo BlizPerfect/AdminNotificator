@@ -1,7 +1,11 @@
+using System;
 using AdminNotificator.Core;
 using AdminNotificator.Core.Domain;
 using AdminNotificator.Core.DTOs;
 using AdminNotificator.Core.Repositories;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);

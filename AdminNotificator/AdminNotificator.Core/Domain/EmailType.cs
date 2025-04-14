@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace AdminNotificator.Core.Domain;
 
 public class EmailType
