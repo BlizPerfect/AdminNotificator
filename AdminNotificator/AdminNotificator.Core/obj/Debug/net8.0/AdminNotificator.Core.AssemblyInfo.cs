@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AdminNotificator.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9278a1e591665cc97637507086efa30909645ee9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1be145883dc60b28ef29443ceba5800a743b5805")]
 [assembly: System.Reflection.AssemblyProductAttribute("AdminNotificator.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AdminNotificator.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
